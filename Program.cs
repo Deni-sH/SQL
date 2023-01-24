@@ -1,6 +1,57 @@
 ﻿/*
 Conteúdo e imagens> Saint Leonardo Buta
 
+ex: 
+
+Ao realizar um UPDATE, temos que ter um certo cuidado, caso contrário podemos alterar dados indevidamente. A não 
+ser que você queira atualizar todos os registros, um UPDATE deve 
+er sempre acompanhado por um:
+r: WHERE
+
+Cada banco de dados possui uma maneira diferente de se conectar, e com o SQL Server não é diferente. 
+Para se conectar a uma instância do SQL Server versão Express, usamos a conexão:
+r: localhost\sqlexpress
+
+Existe um comando no DQL (Data Query Language) usado para obter dados de uma tabela. 
+Esse comando é conhecido como:
+r: SELECT
+
+Para selecionar todas as colunas de uma tabela, usamos um caractere especial, que é o:
+r: *
+
+Existe um comando no DDL (Data Definition Language) usado para criar uma tabela. 
+Esse comando é conhecido como:
+r: CREATE TABLE
+
+Existe uma cláusula usada para ordenar os resultados obtidos de sua consulta. 
+Estamos falando do:
+r: ORDER BY
+
+Em um banco de dados relacional, podemos representar dados do tipo texto. No C# utilizamos o tipo 
+string, e no banco de dados usamos:
+r: varchar ou text.
+
+Podemos manipular dados de uma tabela, como inserir, atualizar e remover dados. 
+Esses comandos juntos são conhecidos como:
+r: DML (Data Control Language)
+
+No banco de dados relacional, existe um conceito que tem como objetivo agrupar um contexto, isto é, 
+separar os dados de forma lógica, como por exemplo separar os dados entre 
+diferentes sistemas. Estamos falando de:
+r: Database
+
+Todo banco de dados relacional usa uma linguagem de consulta e manipulação de dados. 
+Essa linguagem tem o nome de:
+r: SQL
+
+
+
+
+
+
+
+
+
 boot.
 
 em sql server management
