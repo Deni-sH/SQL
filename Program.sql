@@ -1,6 +1,142 @@
 ﻿/*
 Conteúdo e imagens> Saint Leonardo Buta
 
+-----Built-in functions     pt2
+
+Funções pré-existentes que auxiliam na manipulação de dados, como por exemplo contar, somar, média, etc...
+
+---COUNT
+
+SELECT COUNT (*) FROM Produtos
+				// \/nome da coluna
+SELECT COUNT (*) QuantidadeProdutos FROM Produtos
+
+----SUM
+
+SELECT SUM(Preco) PrecoTotal FROM Produtos
+
+---MAX 
+
+SELECT MAX(Preco) ProdutoMaisCaro FROM Produtos
+
+SELECT MAX(Preco) ProdutoMaisCaro FROM Produtos WHERE Tamanho = 'M'
+
+---MIN 
+
+
+SELECT MIN(Preco) ProdutoMaisBarato FROM Produtos
+
+SELECT MIN(Preco) ProdutoMaisBarato FROM Produtos WHERE Tamanho = 'M'
+
+---AVG
+
+MÉDIA
+
+SELECT AVG(Preco) MediaProdutos FROM Produtos
+
+---CONCATENAR
+
+--forma 1
+
+SELECT 
+	Nome,
+	Cor
+FROM Produtos
+
+Forma 2 concatenada->>>>
+
+SELECT 
+	Nome + ' - ' + Cor
+FROM Produtos
+
+OU
+
+SELECT 
+	Nome + ',Cor: - ' + Cor NomeProduto
+FROM Produtos
+
+ou 
+Pra ficar melhor
+
+SELECT 
+	Nome + ',Cor: - ' + Cor + ' - ' +  Genero NomeProduto
+FROM Produtos
+
+---UPPER LOWER
+
+SELECT 
+	Nome + ',Cor: - ' + Cor + ' - ' +  Genero NomeProdutoCompleto,
+	UPPER(Nome) Nome, 
+	LOWER(Cor) Cor
+FROM Produtos
+
+---CRIAR DATA MANUALMENTE
+
+ExemploDb *DatabaseCriada>Tables>tabelaDesejada>botãoDIreito>Design> Cria um tipo> DataCadastro e coloca datetime2 + control S pra salvar
+
+---DATA SCRIPT
+
+ALTER TABLE Produtos
+ADD DataCadastro DATETIME2
+
+--UPDATE CONCATENADO
+
+
+UPDATE Produtos SET DataCadastro = GETDATE()
+
+---DELETAR E ADD COLUMN
+
+DROP COLUMN DataCadastro
+
+ADD DataCadastro DATETIME2
+
+---FORMAT
+
+SELECT 
+	Nome + ',Cor: - ' + Cor + ' - ' +  Genero NomeProdutoCompleto,
+	UPPER(Nome) Nome, 
+	LOWER(Cor) Cor,
+	FORMAT(DataCadastro, 'dd/MM/yyyy HH:mm') Data   <-------
+FROM Produtos
+
+---GROUP BY
+
+Para saber quantos produtos tem de cada tipo na tabela
+
+
+SELECT 
+	Tamanho,
+	COUNT(*) Quantidade
+	
+FROM Produtos
+WHERE Tamanho <> ''      //Tamanho diferente de 0. WHERE sempre antes do GROUP BY
+GROUP BY Tamanho
+ORDER BY Quantidade DESC
+
+---Seguir sempre a ordem
+
+SELECT> WHERE >GROUP BY > ORDER BY
+
+
+---PRIMARY KEY PK & FOREIGN KEY FK
+
+Primary Key = Chave única que identifica cada registo na tabela.
+Foreign Key = Chave que identifica o registro existente em outra tabela.
+
+Design>ID>SET PRIMARY KEY> CONTROL S
+
+
+
+
+
+
+
+
+
+
+
+
+
 ex: 
 
 Ao realizar um UPDATE, temos que ter um certo cuidado, caso contrário podemos alterar dados indevidamente. A não 
