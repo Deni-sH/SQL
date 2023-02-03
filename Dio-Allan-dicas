@@ -1,0 +1,179 @@
+Traga no SELECT somente as colunas necessárias
+
+
+
+Evite utilizar SELECT * FROM. É muito comum fazermos consultas com JOINS em diversas tabelas. Especificar no SELECT somente as colunas que vai realmente utilizar é uma boa prática quase obrigatória para nós desenvolvedores, pois o SGBD “gastará” um tempo de processamento para buscar quais são todos as colunas da(s) tabela(s) especificada(s) na cláusula FROM.
+
+
+
+Utilize flags de tipo booleano ou inteiro
+
+
+
+Caso tenha necessidade de possuir colunas em uma tabela cujo valor se refira à valores verdadeiros ou falsos, opte por criar as colunas com o tipo booleano nativo do banco de dados que você está utilizando, ao invés de utilizar informações ‘S’ e ‘N’ em um campo do tipo texto. Em tabelas com muitos registros, o filtro por este campo torna-se desnecessariamente lento. Caso seu banco não possua um tipo booleano, use um campo numérico(1) para armazenar 1 ou 0, é mais performático do que um campo texto guardando ‘S’ e ‘N’.
+
+
+
+Tipos são extremamente importantes
+
+
+
+Se preocupe sempre com os tipos das colunas das tabelas do sistema que você está criando para verificar se os mesmos correspondem fielmente ao tipo de informação que será armazenada. Por exemplo, se a coluna irá armazenar uma data, crie um campo do tipo DATE. Se vai armazenar um número inteiro, crie uma coluna do tipo INTEGER e por aí vai. Isto parece óbvio, mas é muito comum encontrarmos este tipo de situação.
+
+Esta boa prática vai dar segurança por não permitir que seja inserida informação com tipo não compatível ou inconsistente, e vai melhorar a performance de consultas futuramente por não haver necessidade de se fazer conversões de tipo.
+
+
+
+Não utilize HAVING para filtrar dados
+
+
+
+Caso necessite filtrar dados em um agrupamento de informações, prefira sempre realizar esta operação na cláusula WHERE ao invés do HAVING, por questões de performance, a não ser que seja necessário realizar algum filtro utilizando realmente as operações de agregação:
+
+
+
+--NÃO RECOMENDÁVEL 
+
+
+
+SELECT NOME, TIPO
+
+FROM MINHA_TABELA A 
+
+GROUP BY NOME, TIPO
+
+HAVING TIPO = 2
+
+
+
+--RECOMENDÁVEL
+
+
+
+SELECT NOME, TIPO
+
+FROM MINHA_TABELA A 
+
+WHERE TIPO=2
+
+GROUP BY NOME, TIPO
+
+
+
+Utilização de EXISTS
+
+
+
+Caso precise retornar em uma consulta registros de uma tabela que satisfaçam uma determinada condição segundo referências de uma segunda tabela, ao invés de utilizar uma subconsulta na cláusula WHERE para um operador IN prefira a utilização de EXISTS:
+
+
+
+SELECT *
+
+  FROM MINHA_TABELA M
+
+ WHERE EXISTS (SELECT *
+
+      FROM TABELA_LOG L
+
+      WHERE L.ID_MINHA_TABELA = M.ID
+
+       AND TO_CHAR(L.DATA, 'YYYY') = '2017')
+
+
+
+Na maior parte dos cenários, esta forma tem um desempenho muito superior, em diversos bancos dados, do que a utilização da cláusula IN com subconsultas:
+
+
+
+SELECT *
+
+  FROM MINHA_TABELA M
+
+ WHERE M.ID IN (SELECT L.ID_MINHA_TABELA
+
+      FROM TABELA_LOG L
+
+      WHERE TO_CHAR(L.DATA, 'YYYY') = '2017')
+
+
+
+Conversões com UPPER, TO_CHAR e etc em cláusulas WHERE
+
+
+
+Evite fazer conversões de tipo e formato em colunas na cláusula WHERE para realizar filtro de dados. Esta operação faz com que o banco de dados naturalmente ignore a utilização dos índices automáticos criados para estas colunas, que tornariam a consulta bem mais rápida. Estude sempre a possibilidade de já armazenar os dados no formato correto ou que tenha uma predominância na forma de visualização na aplicação.
+
+
+
+Utilize procedures e views
+
+
+
+Quando não utilizamos procedures e views, toda vez que executamos uma instrução SQL é necessário que o SGBD analise se a sintaxe do comando esta correta, se os objetos referenciados realmente existem, dentre outras análises igualmente necessárias.
+
+Quando o código a ser executado encontra-se em uma procedure ou view, o banco de dados não precisa fazer estas verificações e validações, pois as mesmas já foram feitas ao se criar as procedures e views. Portanto, com o banco de dados poupando este trabalho, logicamente a perfomance das execuções de SQL enviados pela aplicação aumenta consideravelmente em sistemas críticos.
+
+
+
+Só utilize ORDER BY e DISTINCT se for realmente necessário
+
+
+
+Ás vezes queremos, por exemplo, apenas listar conteúdo em tela e resolvemos por conta própria, sem haver especificações explícitas pra isto, fazer ordenação por data, registro mais recente e por aí vai, sendo que às vezes isto não agregará valor ao usuário final na aplicação. É estranho algum retorno de consulta sem ordenação? Pode até parecer, mas deve ser utilizado conscientemente por questões de performance, assim como o DISTINCT.
+
+
+
+Utilização de índices em colunas muito acessadas
+
+
+
+Caso seja identificado que é necessária a criação de algum índice que vise melhorar a performance das consultas à base de dados de uma aplicação, procure fazer as seguintes perguntas para determinar o critério de criação, exatamente nesta ordem:
+
+Qual coluna é acessada ou requisitada com mais frequência, sendo chave-primária ou não?
+
+Será que não é conveniente a modificação ou remodelagem da estrutura para fins de performance, considerando a criticidade desta minha consulta?
+
+
+
+Cuidado ao utilizar índices em colunas que são atualizadas com muita frequência
+
+
+
+A utilização de índices nem sempre é uma boa alternativa em determinados cenários. Um deles é quando o índice é criado em colunas que são atualizadas com uma frequência absurda. Mesmo tendo boas intenções, o cumprimento do objetivo de melhorar a performance das consultas pode acarretar em perdas de performance em operações de INSERT, DELETE e UPDATE nesta tabela.
+
+Portanto, criação de índices é algo que deve ser sempre analisada com muito cuidado.
+
+
+
+Índices em colunas muito presentes em WHERE, JOIN, ORDER BY e TOP
+
+
+
+Uma boa dica para verificar se seria conveniente a criação de um índice em determinada coluna é verificar a frequência de utilização delas em cláusulas WHERE, JOIN, ORDER BY e TOP. Esta é sempre uma boa pista de índices que poderiam ser criados.
+
+Mas, como dito no tópico anterior, a criação de índices sempre deve ser analisada e aplicada com muito cuidado.
+
+
+
+Não deixe as chaves estrangeiras para depois
+
+
+
+Esta dica é quase que tão óbvia e trivial quanto a não utilização de SELECT * FROM. Mas, é muito comum vermos sistemas criados utilizando tabelas sem os devidos relacionamentos no banco de dados. Então, nunca deixe pra depois a criação das devidas referências de chave-primária e estrangeira. Crie-as no exato momento da criação da própria tabela.
+
+
+
+Tabelas sem chave-primária
+
+
+
+Sim, infelizmente isto existe aos montes por aí. Se a sua tabela não possui chave primária, é recomendável que seja feita revisão na sua modelagem, pois em teoria uma tabela não deveria ficar “isolada” em modelo relacional.
+
+
+
+Fonte :
+
+https://medium.com/@alexandre.malavasi/25-dicas-e-boas-práticas-de-banco-de-dados-para-desenvolvedores-7a60bfc28f1f
+
+http://db4beginners.com/blog/13-dicas-simples-e-melhore-suas-queries/
